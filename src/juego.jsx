@@ -187,7 +187,7 @@ export default function App() {
       </header>
 
       <div className="max-w-xl w-full mx-auto">
-        <GoogleAd slot="ANUNCIO_TOP" format="horizontal" />
+        <GoogleAd slot="1960438176" format="horizontal" />
       </div>
 
       <main className="max-w-6xl w-full mx-auto grid lg:grid-cols-12 gap-4 items-start">
@@ -213,7 +213,7 @@ export default function App() {
             </button>
           </div>
           <div className="w-full">
-            <GoogleAd slot="ANUNCIO_SIDE" format="rectangle" />
+            <GoogleAd slot="1326013356" format="rectangle" />
           </div>
         </div>
       </main>
