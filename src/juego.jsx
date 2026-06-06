@@ -4,7 +4,7 @@ import { Chess } from 'chess.js';
 import { Chessboard } from 'react-chessboard';
 
 // Este componente maneja tus anuncios de Google AdSense
-const GoogleAd = ({ slot, format }) => {
+const GoogleAd = ({ slot, format, estiloSimulado }) => {
   useEffect(() => {
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
@@ -14,10 +14,11 @@ const GoogleAd = ({ slot, format }) => {
   }, []);
 
   return (
-    <div className="flex justify-center my-4">
+    <div className={`flex flex-col items-center justify-center bg-slate-800 border-2 border-dashed border-slate-600 rounded p-2 ${estiloSimulado}`}>
+      <span className="text-[10px] text-slate-400 font-bold mb-1">ESPACIO DE PUBLICIDAD (ADSENSE)</span>
       <ins
         className="adsbygoogle"
-        style={{ display: 'block' }}
+        style={{ display: 'block', width: '100%', height: '100%' }}
         data-ad-client="ca-pub-376080444114245"
         data-ad-slot={slot}
         data-ad-format={format}
@@ -38,6 +39,16 @@ export default function AjedrezJuego() {
       if (result) {
         setGame(new Chess(game.fen()));
         setGameHistory(game.history());
+
+        // Verificar el estado de la partida para avisar al usuario
+        if (game.isCheckmate()) {
+          setStatus('¡JAQUE MATE! Partida finalizada.');
+        } else if (game.isDraw()) {
+          setStatus('Empate (Tablas).');
+        } else if (game.inCheck()) {
+          setStatus('¡JAQUE! Cuidado con tu Rey.');
+        }
+        
         return result;
       }
     } catch (error) {
@@ -49,12 +60,16 @@ export default function AjedrezJuego() {
   function makeRandomMove() {
     const possibleMoves = game.moves();
     if (game.isGameOver() || game.isDraw() || possibleMoves.length === 0) {
-      setStatus('Partida terminada.');
+      if (game.isCheckmate()) setStatus('¡JAQUE MATE! Perdiste la partida.');
       return;
     }
     const randomIdx = Math.floor(Math.random() * possibleMoves.length);
     makeAMove(possibleMoves[randomIdx]);
-    setStatus('Tu turno. Movés las Blancas.');
+    
+    // Si la IA no te hizo jaque mate, vuelve a ser tu turno
+    if (!game.isCheckmate() && !game.inCheck()) {
+      setStatus('Tu turno. Movés las Blancas.');
+    }
   }
 
   function onDrop(sourceSquare, targetSquare) {
@@ -79,50 +94,61 @@ export default function AjedrezJuego() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white font-sans flex flex-col justify-between">
-      {/* Anuncio Horizontal Superior */}
-      <GoogleAd slot="1960438176" format="horizontal" />
+    <div className="min-h-screen bg-slate-900 text-white font-sans flex flex-col justify-between p-4">
+      {/* TÍTULO DEL JUEGO ARRIBA */}
+      <header className="text-center my-2">
+        <h1 className="text-3xl font-extrabold text-emerald-400 tracking-wider">CHESS MASTER AI</h1>
+        <p className="text-xs text-slate-400 mt-1">Desafía a la computadora en tiempo real</p>
+      </header>
 
-      <main className="flex-grow flex flex-col md:flex-row items-center justify-center p-4 gap-8">
-        {/* Contenedor del Tablero */}
-        <div className="w-full max-w-[500px] aspect-square bg-slate-800 p-2 rounded-lg shadow-2xl">
+      {/* ANUNCIO HORIZONTAL SUPERIOR - Con tu número 1960438176 */}
+      <div className="w-full max-w-[900px] mx-auto my-2">
+        <GoogleAd slot="1960438176" format="horizontal" estiloSimulado="w-full h-[90px]" />
+      </div>
+
+      <main className="flex-grow flex flex-col md:flex-row items-center justify-center gap-8 my-4">
+        {/* TABLERO DE AJEDREZ */}
+        <div className="w-full max-w-[460px] aspect-square bg-slate-800 p-2 rounded-lg shadow-2xl border border-slate-700">
           <Chessboard 
             position={game.fen()} 
             onPieceDrop={onDrop}
-            boardWidth={484}
+            boardWidth={444}
             customDarkSquareStyle={{ backgroundColor: '#779556' }}
             customLightSquareStyle={{ backgroundColor: '#eeeed2' }}
           />
         </div>
 
-        {/* Panel de Control Lateral */}
-        <div className="w-full max-w-[350px] bg-slate-800 p-6 rounded-lg shadow-xl flex flex-col gap-4">
+        {/* PANEL DE CONTROL LATERAL */}
+        <div className="w-full max-w-[350px] bg-slate-800 p-6 rounded-lg shadow-xl flex flex-col gap-4 border border-slate-700">
           <h2 className="text-xl font-bold border-b border-slate-700 pb-2 text-emerald-400">PANEL DE CONTROL</h2>
-          <p className="text-sm text-slate-300 bg-slate-950 p-3 rounded border border-slate-700">{status}</p>
+          
+          {/* El cartel que avisa los turnos y el Jaque Mate */}
+          <div className="text-sm font-semibold text-center text-white bg-slate-950 p-4 rounded border border-emerald-600 shadow-inner">
+            {status}
+          </div>
           
           <button 
             onClick={reiniciarPartida}
-            className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 px-4 rounded transition-colors shadow"
+            className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded transition-colors shadow-md text-sm tracking-wide"
           >
             REINICIAR PARTIDA
           </button>
 
           <div className="mt-2">
-            <h3 className="text-sm font-semibold text-slate-400 mb-1">Historial de jugadas:</h3>
-            <div className="bg-slate-950 p-2 rounded h-24 overflow-y-auto text-xs font-mono text-slate-400 border border-slate-700">
-              {gameHistory.length === 0 ? 'Sin movimientos' : gameHistory.join(', ')}
+            <h3 className="text-xs font-semibold text-slate-400 mb-1">Historial de jugadas:</h3>
+            <div className="bg-slate-950 p-2 rounded h-20 overflow-y-auto text-xs font-mono text-slate-400 border border-slate-700">
+              {gameHistory.length === 0 ? 'Sin movimientos aún' : gameHistory.join(', ')}
             </div>
           </div>
 
-          {/* Anuncio Lateral dentro del Panel */}
-          <div className="mt-4 border-t border-slate-700 pt-4">
-            <p className="text-[10px] text-center text-slate-500 mb-1">PUBLICIDAD</p>
-            <GoogleAd slot="1326013356" format="rectangle" />
+          {/* ANUNCIO CUADRADO LATERAL - Con tu número 1326013356 */}
+          <div className="mt-2 pt-2 border-t border-slate-700">
+            <GoogleAd slot="1326013356" format="rectangle" estiloSimulado="w-full h-[200px]" />
           </div>
         </div>
       </main>
 
-      <footer className="bg-slate-950 text-center py-2 text-xs text-slate-500 border-t border-slate-800">
+      <footer className="text-center py-2 text-[11px] text-slate-500 border-t border-slate-800">
         CHESS ENGINE & ADS MONETIZATION
       </footer>
     </div>
