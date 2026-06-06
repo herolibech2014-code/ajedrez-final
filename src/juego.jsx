@@ -35,7 +35,6 @@ export default function AjedrezJuego() {
 
   function checkGameStatus(currentGame) {
     if (currentGame.isCheckmate()) {
-      // Si es jaque mate y le toca mover a las negras, significa que las blancas (vos) ganaron
       if (currentGame.turn() === 'b') {
         setStatus('¡JAQUE MATE! ¡Ganaste la partida! 🏆');
       } else {
@@ -55,10 +54,7 @@ export default function AjedrezJuego() {
         const newGame = new Chess(game.fen());
         setGame(newGame);
         setGameHistory(newGame.history());
-
-        // Revisar si tu movimiento terminó la partida o dio jaque
         checkGameStatus(newGame);
-        
         return result;
       }
     } catch (error) {
@@ -80,7 +76,6 @@ export default function AjedrezJuego() {
     setGame(newGame);
     setGameHistory(newGame.history());
 
-    // Revisar si el movimiento de la IA terminó la partida, dio jaque, o si sigue tu turno
     if (newGame.isGameOver() || newGame.isDraw()) {
       checkGameStatus(newGame);
     } else {
@@ -89,7 +84,6 @@ export default function AjedrezJuego() {
   }
 
   function onDrop(sourceSquare, targetSquare) {
-    // Si el juego ya terminó, no dejamos mover más piezas
     if (game.isGameOver() || game.isDraw()) return false;
 
     const move = makeAMove({
@@ -100,7 +94,6 @@ export default function AjedrezJuego() {
 
     if (move === null) return false;
 
-    // Si tu movimiento no terminó el juego, le toca pensar a la IA
     if (!game.isGameOver() && !game.isDraw()) {
       setStatus('La IA está pensando...');
       setTimeout(makeRandomMove, 600);
@@ -169,6 +162,18 @@ export default function AjedrezJuego() {
           </div>
         </div>
       </main>
+
+      {/* SECCIÓN DE TEXTO PARA SEO (Esto es lo que lee Google para posicionarte) */}
+      <section className="w-full max-w-[850px] mx-auto my-6 bg-slate-800/50 p-6 rounded-lg border border-slate-700/60 text-sm text-slate-300 leading-relaxed">
+        <h2 className="text-lg font-bold text-emerald-400 mb-3">¿Cómo jugar Ajedrez Online en Chess Master AI?</h2>
+        <p className="mb-4">
+          Bienvenido a <strong>Chess Master AI</strong>, el sitio ideal para <strong>jugar ajedrez online gratis</strong>. Nuestra inteligencia artificial está diseñada para adaptarse y responder en tiempo real, permitiéndote practicar tus mejores <strong>aperturas, estrategias y tácticas de ajedrez</strong> desde cualquier dispositivo (PC, tablet o celular) y de forma 100% directa, <strong>sin descargar aplicaciones</strong> ni registrarte.
+        </p>
+        <h3 className="font-semibold text-white mb-1">Consejos para ganarle a la Computadora:</h3>
+        <p>
+          Para vencer a nuestro motor de ajedrez, asegurate de controlar el centro del tablero desde los primeros movimientos, desarrollar tus caballos y alfiles rápidamente, y proteger a tu Rey mediante el enroque. Cada partida es una oportunidad excelente para entrenar tu mente, analizar tus errores en el historial de jugadas y perfeccionar tu nivel de juego. ¡Mové tus blancas y lográ el <strong>jaque mate</strong> definitivo!
+        </p>
+      </section>
 
       <footer className="text-center py-2 text-[11px] text-slate-500 border-t border-slate-800">
         CHESS ENGINE & ADS MONETIZATION
