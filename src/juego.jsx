@@ -121,16 +121,17 @@ export default function AjedrezJuego() {
         <GoogleAd slot="1960438176" format="horizontal" estiloSimulado="w-full h-[90px]" />
       </div>
 
-      <main className="flex-grow flex flex-col md:flex-row items-center justify-center gap-8 my-4">
-        {/* TABLERO DE AJEDREZ */}
-        <div className="w-full max-w-[460px] aspect-square bg-slate-800 p-2 rounded-lg shadow-2xl border border-slate-700">
-          <Chessboard 
-            position={game.fen()} 
-            onPieceDrop={onDrop}
-            boardWidth={444}
-            customDarkSquareStyle={{ backgroundColor: '#779556' }}
-            customLightSquareStyle={{ backgroundColor: '#eeeed2' }}
-          />
+      <main className="flex-grow flex flex-col md:flex-row items-center justify-center gap-8 my-4 w-full max-w-[1000px] mx-auto">
+        {/* TABLERO DE AJEDREZ - ¡Ahora 100% elástico para celular! */}
+        <div className="w-full max-w-[460px] px-2">
+          <div className="w-full aspect-square bg-slate-800 p-2 rounded-lg shadow-2xl border border-slate-700">
+            <Chessboard 
+              position={game.fen()} 
+              onPieceDrop={onDrop}
+              customDarkSquareStyle={{ backgroundColor: '#779556' }}
+              customLightSquareStyle={{ backgroundColor: '#eeeed2' }}
+            />
+          </div>
         </div>
 
         {/* PANEL DE CONTROL LATERAL */}
@@ -163,7 +164,7 @@ export default function AjedrezJuego() {
         </div>
       </main>
 
-      {/* SECCIÓN DE TEXTO PARA SEO (Esto es lo que lee Google para posicionarte) */}
+      {/* SECCIÓN DE TEXTO PARA SEO */}
       <section className="w-full max-w-[850px] mx-auto my-6 bg-slate-800/50 p-6 rounded-lg border border-slate-700/60 text-sm text-slate-300 leading-relaxed">
         <h2 className="text-lg font-bold text-emerald-400 mb-3">¿Cómo jugar Ajedrez Online en Chess Master AI?</h2>
         <p className="mb-4">
