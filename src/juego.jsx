@@ -33,21 +33,31 @@ export default function AjedrezJuego() {
   const [gameHistory, setGameHistory] = useState([]);
   const [status, setStatus] = useState('Tu turno. Movés las Blancas.');
 
+  function checkGameStatus(currentGame) {
+    if (currentGame.isCheckmate()) {
+      // Si es jaque mate y le toca mover a las negras, significa que las blancas (vos) ganaron
+      if (currentGame.turn() === 'b') {
+        setStatus('¡JAQUE MATE! ¡Ganaste la partida! 🏆');
+      } else {
+        setStatus('¡JAQUE MATE! La IA ha ganado esta vez.');
+      }
+    } else if (currentGame.isDraw()) {
+      setStatus('Empate (Tablas). Partida finalizada.');
+    } else if (currentGame.inCheck()) {
+      setStatus('¡JAQUE! Cuidado con tu Rey.');
+    }
+  }
+
   function makeAMove(move) {
     try {
       const result = game.move(move);
       if (result) {
-        setGame(new Chess(game.fen()));
-        setGameHistory(game.history());
+        const newGame = new Chess(game.fen());
+        setGame(newGame);
+        setGameHistory(newGame.history());
 
-        // Verificar el estado de la partida para avisar al usuario
-        if (game.isCheckmate()) {
-          setStatus('¡JAQUE MATE! Partida finalizada.');
-        } else if (game.isDraw()) {
-          setStatus('Empate (Tablas).');
-        } else if (game.inCheck()) {
-          setStatus('¡JAQUE! Cuidado con tu Rey.');
-        }
+        // Revisar si tu movimiento terminó la partida o dio jaque
+        checkGameStatus(newGame);
         
         return result;
       }
@@ -58,21 +68,30 @@ export default function AjedrezJuego() {
   }
 
   function makeRandomMove() {
+    if (game.isGameOver() || game.isDraw()) return;
+
     const possibleMoves = game.moves();
-    if (game.isGameOver() || game.isDraw() || possibleMoves.length === 0) {
-      if (game.isCheckmate()) setStatus('¡JAQUE MATE! Perdiste la partida.');
-      return;
-    }
+    if (possibleMoves.length === 0) return;
+
     const randomIdx = Math.floor(Math.random() * possibleMoves.length);
-    makeAMove(possibleMoves[randomIdx]);
+    game.move(possibleMoves[randomIdx]);
     
-    // Si la IA no te hizo jaque mate, vuelve a ser tu turno
-    if (!game.isCheckmate() && !game.inCheck()) {
+    const newGame = new Chess(game.fen());
+    setGame(newGame);
+    setGameHistory(newGame.history());
+
+    // Revisar si el movimiento de la IA terminó la partida, dio jaque, o si sigue tu turno
+    if (newGame.isGameOver() || newGame.isDraw()) {
+      checkGameStatus(newGame);
+    } else {
       setStatus('Tu turno. Movés las Blancas.');
     }
   }
 
   function onDrop(sourceSquare, targetSquare) {
+    // Si el juego ya terminó, no dejamos mover más piezas
+    if (game.isGameOver() || game.isDraw()) return false;
+
     const move = makeAMove({
       from: sourceSquare,
       to: targetSquare,
@@ -81,8 +100,11 @@ export default function AjedrezJuego() {
 
     if (move === null) return false;
 
-    setStatus('La IA está pensando...');
-    setTimeout(makeRandomMove, 600);
+    // Si tu movimiento no terminó el juego, le toca pensar a la IA
+    if (!game.isGameOver() && !game.isDraw()) {
+      setStatus('La IA está pensando...');
+      setTimeout(makeRandomMove, 600);
+    }
     return true;
   }
 
@@ -101,7 +123,7 @@ export default function AjedrezJuego() {
         <p className="text-xs text-slate-400 mt-1">Desafía a la computadora en tiempo real</p>
       </header>
 
-      {/* ANUNCIO HORIZONTAL SUPERIOR - Con tu número 1960438176 */}
+      {/* ANUNCIO HORIZONTAL SUPERIOR - Tu número 1960438176 */}
       <div className="w-full max-w-[900px] mx-auto my-2">
         <GoogleAd slot="1960438176" format="horizontal" estiloSimulado="w-full h-[90px]" />
       </div>
@@ -122,7 +144,7 @@ export default function AjedrezJuego() {
         <div className="w-full max-w-[350px] bg-slate-800 p-6 rounded-lg shadow-xl flex flex-col gap-4 border border-slate-700">
           <h2 className="text-xl font-bold border-b border-slate-700 pb-2 text-emerald-400">PANEL DE CONTROL</h2>
           
-          {/* El cartel que avisa los turnos y el Jaque Mate */}
+          {/* El cartel que avisa los turnos y los resultados */}
           <div className="text-sm font-semibold text-center text-white bg-slate-950 p-4 rounded border border-emerald-600 shadow-inner">
             {status}
           </div>
@@ -141,7 +163,7 @@ export default function AjedrezJuego() {
             </div>
           </div>
 
-          {/* ANUNCIO CUADRADO LATERAL - Con tu número 1326013356 */}
+          {/* ANUNCIO CUADRADO LATERAL - Tu número 1326013356 */}
           <div className="mt-2 pt-2 border-t border-slate-700">
             <GoogleAd slot="1326013356" format="rectangle" estiloSimulado="w-full h-[200px]" />
           </div>
