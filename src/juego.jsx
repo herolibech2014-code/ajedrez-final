@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Chess } from 'chess';
+import { Chess } from 'Chess';
 import { Chessboard } from 'react-chessboard';
 
 // Este componente maneja tus anuncios de Google AdSense
