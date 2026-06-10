@@ -49,40 +49,70 @@ export default function AjedrezJuego() {
     }
   }
 
-  // Valores estándar del ajedrez para que la IA sepa qué pieza vale más
+  // Valores de las piezas
   function obtenerValorPieza(pieza) {
     if (!pieza) return 0;
     const valores = { p: 10, n: 30, b: 30, r: 50, q: 90, k: 900 };
     return valores[pieza.type] || 0;
   }
 
-  // Evalúa el valor total de las piezas de la IA (negras) menos las del usuario (blancas)
-  function evaluarTableroCompleto(tablero) {
+  // EVALUACIÓN AVANZADA: Suma puntos por piezas y por estrategia posicional
+  function evaluarTableroCompleto(chessInstance) {
     let puntajeTotal = 0;
-    tablero.forEach((fila) => {
-      fila.forEach((casilla) => {
+    const tablero = chessInstance.board();
+
+    // Matriz de importancia del centro (controlar el medio da más puntos)
+    const bonificacionCentro = {
+      d4: 4, e4: 4, d5: 4, e5: 4,
+      c4: 2, f4: 2, c5: 2, f5: 2, c3: 2, d3: 2, e3: 2, f3: 2,
+      c6: 2, d6: 2, e6: 2, f6: 2
+    };
+
+    for (let r = 0; r < 8; r++) {
+      for (let c = 0; c < 8; c++) {
+        const casilla = tablero[r][c];
         if (casilla) {
-          const valor = obtenerValorPieza(casilla);
-          // Si es negra (IA) suma, si es blanca (usuario) resta
+          let valor = obtenerValorPieza(casilla);
+          
+          // Convertir fila/columna a nombre de casilla (ej: "e4")
+          const nombreCasilla = String.fromCharCode(97 + c) + (8 - r);
+          
+          // Sumar bonificación por controlar el centro con peones o caballos
+          if ((casilla.type === 'p' || casilla.type === 'n') && bonificacionCentro[nombreCasilla]) {
+            valor += bonificacionCentro[nombreCasilla];
+          }
+
+          // Las negras (IA) suman, las blancas (vos) restan
           puntajeTotal += casilla.color === 'b' ? valor : -valor;
         }
-      });
-    });
+      }
+    }
+
+    // Penalización Gigante si la IA deja el Rey regalado al "Mate del Pastor" (f7 desprotegido)
+    // Si la reina blanca o alfil blanco apuntan con peligro al inicio, obligamos a defender.
+    if (chessInstance.turn() === 'b' && chessInstance.history().length < 8) {
+      const movimientosBlancas = chessInstance.moves({ verbose: true });
+      const amenazaEnF7 = movimientosBlancas.some(m => m.to === 'f7');
+      if (amenazaEnF7) {
+        puntajeTotal -= 150; // Alerta roja para la IA: ¡Te están por hacer jaque mate!
+      }
+    }
+
     return puntajeTotal;
   }
 
-  // El cerebro de la IA para elegir su jugada
+  // Cerebro selector de jugadas
   function calcularMejorMovimiento() {
     const movimientosPosibles = game.moves({ verbose: true });
     if (movimientosPosibles.length === 0) return null;
 
-    // 1. FÁCIL: Al azar
+    // 1. FÁCIL: Movimientos tontos al azar
     if (dificultad === 'principiante') {
       const randomIdx = Math.floor(Math.random() * movimientosPosibles.length);
       return movimientosPosibles[randomIdx].san;
     }
 
-    // 2. MEDIO: Captura si puede, si no, al azar
+    // 2. MEDIO: Ataca si puede, si no, mueve normal
     if (dificultad === 'intermedio') {
       let mejorCaptura = null;
       let maxValor = -1;
@@ -100,43 +130,42 @@ export default function AjedrezJuego() {
       return movimientosPosibles[randomIdx].san;
     }
 
-    // 3. DIFÍCIL (CORREGIDO): Busca la jugada que la deje en mejor posición general tras tu respuesta
+    // 3. DIFÍCIL (RECARGADO): Piensa tácticamente contra tus jugadas y cuida su f7
     let mejorMovimientoAvanzado = movimientosPosibles[0].san;
-    let peorPuntajeParaVos = -10000;
+    let mejorResultadoParaIA = -10000;
 
     for (let mov of movimientosPosibles) {
       game.move(mov.san); // La IA simula su jugada
       
-      // Si con este movimiento la IA te hace jaque mate, lo elige de cabeza
       if (game.isCheckmate()) {
         game.undo();
-        return mov.san;
+        return mov.san; // Si te puede hacer mate a vos, lo hace sin dudar
       }
 
-      // Ahora simula qué opciones tenés vos para responder
+      // Simula tu mejor respuesta defensiva u ofensiva
       const respuestasUsuario = game.moves({ verbose: true });
       let elMejorContraataqueTuyo = 10000; 
 
       if (respuestasUsuario.length === 0) {
-        // Si no tenés movimientos, evalúa el tablero directo
-        elMejorContraataqueTuyo = evaluarTableroCompleto(game.board());
+        elMejorContraataqueTuyo = evaluarTableroCompleto(game);
       } else {
-        // Busca cuál sería tu jugada más dañina para ella
         for (let rMov of respuestasUsuario) {
           game.move(rMov.san);
-          const puntajeDespuesDeTuTurno = evaluarTableroCompleto(game.board());
+          const puntajeTablero = evaluarTableroCompleto(game);
           game.undo();
-          if (puntajeDespuesDeTuTurno < elMejorContraataqueTuyo) {
-            elMejorContraataqueTuyo = puntajeDespuesDeTuTurno;
+          
+          // Vos vas a buscar el puntaje más bajo para la IA (lo más dañino para ella)
+          if (puntajeTablero < elMejorContraataqueTuyo) {
+            elMejorContraataqueTuyo = puntajeTablero;
           }
         }
       }
 
-      game.undo(); // Deshace la simulación inicial
+      game.undo(); // Deshace simulación de la IA
 
-      // La IA va a elegir la jugada donde tu mejor contraataque le haga el menor daño posible
-      if (elMejorContraataqueTuyo > peorPuntajeParaVos) {
-        peorPuntajeParaVos = elMejorContraataqueTuyo;
+      // La IA elige el movimiento que le garantice el mejor tablero posible tras tu contraataque
+      if (elMejorContraataqueTuyo > mejorResultadoParaIA) {
+        mejorResultadoParaIA = elMejorContraataqueTuyo;
         mejorMovimientoAvanzado = mov.san;
       }
     }
