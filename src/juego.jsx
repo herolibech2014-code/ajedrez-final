@@ -339,10 +339,16 @@ export default function AjedrezJuego() {
         </section>
       )}
 
-      {/* TEXTO SEO */}
+      {/* SECCIÓN DE TEXTO PARA SEO - ENFOCADO EN BUENOS AIRES Y CABA */}
       <section className="w-full max-w-[850px] mx-auto my-6 bg-slate-800/50 p-6 rounded-lg border border-slate-700/60 text-sm text-slate-300 leading-relaxed">
-        <h2 className="text-lg font-bold text-emerald-400 mb-3">¿Cómo jugar Ajedrez Online en Chess Master AI?</h2>
-        <p className="mb-4">Bienvenido a Chess Master AI...</p>
+        <h2 className="text-lg font-bold text-emerald-400 mb-3">¿Dónde jugar Ajedrez Online en Buenos Aires?</h2>
+        <p className="mb-4">
+          Bienvenido a <strong>Chess Master AI</strong>, la plataforma preferida por la comunidad de ajedrez en Buenos Aires y CABA para <strong>jugar ajedrez online gratis</strong>. Nuestra inteligencia artificial avanzada está diseñada para adaptarse a tu ritmo en tiempo real, ideal tanto para estudiantes que recién arrancan en Capital Federal como para jugadores experimentados que buscan perfeccionar sus <strong>aperturas, estrategias y tácticas de ajedrez</strong> sin salir de casa. Jugá directo desde tu PC, tablet o celular, <strong>sin descargas pesadas</strong> y de forma 100% gratuita.
+        </p>
+        <h3 className="font-semibold text-white mb-1">Unite al Club de Ajedrez Virtual de CABA:</h3>
+        <p>
+          Para ganarle a nuestro motor inteligente en el nivel difícil, vas a tener que dominar el centro del tablero y cuidar muy bien tu defense. Chess Master AI es la herramienta de entrenamiento mental elegida en Buenos Aires para analizar jugadas, divertirse y alcanzar el <strong>jaque mate</strong> definitivo. ¡Mové tus piezas y desafiá a la IA hoy mismo!
+        </p>
       </section>
 
       <footer className="text-center py-2 text-[11px] text-slate-500 border-t border-slate-800">
