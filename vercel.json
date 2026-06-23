@@ -1,9 +1,0 @@
-
-{
-  "cleanUrls": true,
-  "rewrites": [
-    { "source": "/ads.txt", "destination": "/ads.txt" },
-    { "source": "/manifest.json", "destination": "/manifest.json" },
-    { "source": "/(.*)", "destination": "/index.html" }
-  ]
-}
