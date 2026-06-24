@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Chess } from 'chess.js';
 import { Chessboard } from 'react-chessboard';
@@ -19,7 +18,7 @@ const GoogleAd = ({ slot, format, estiloSimulado }) => {
       <ins
         className="adsbygoogle"
         style={{ display: 'block', width: '100%', height: '100%' }}
-        data-ad-client="ca-pub-376080444114245"
+        data-ad-client="ca-pub-3760080444114245"
         data-ad-slot={slot}
         data-ad-format={format}
         data-full-width-responsive="true"
@@ -89,12 +88,11 @@ export default function AjedrezJuego() {
     }
 
     // Penalización Gigante si la IA deja el Rey regalado al "Mate del Pastor" (f7 desprotegido)
-    // Si la reina blanca o alfil blanco apuntan con peligro al inicio, obligamos a defender.
     if (chessInstance.turn() === 'b' && chessInstance.history().length < 8) {
       const movimientosBlancas = chessInstance.moves({ verbose: true });
       const amenazaEnF7 = movimientosBlancas.some(m => m.to === 'f7');
       if (amenazaEnF7) {
-        puntajeTotal -= 150; // Alerta roja para la IA: ¡Te están por hacer jaque mate!
+        puntajeTotal -= 150;
       }
     }
 
@@ -139,7 +137,7 @@ export default function AjedrezJuego() {
       
       if (game.isCheckmate()) {
         game.undo();
-        return mov.san; // Si te puede hacer mate a vos, lo hace sin dudar
+        return mov.san;
       }
 
       // Simula tu mejor respuesta defensiva u ofensiva
@@ -154,16 +152,14 @@ export default function AjedrezJuego() {
           const puntajeTablero = evaluarTableroCompleto(game);
           game.undo();
           
-          // Vos vas a buscar el puntaje más bajo para la IA (lo más dañino para ella)
           if (puntajeTablero < elMejorContraataqueTuyo) {
             elMejorContraataqueTuyo = puntajeTablero;
           }
         }
       }
 
-      game.undo(); // Deshace simulación de la IA
+      game.undo();
 
-      // La IA elige el movimiento que le garantice el mejor tablero posible tras tu contraataque
       if (elMejorContraataqueTuyo > mejorResultadoParaIA) {
         mejorResultadoParaIA = elMejorContraataqueTuyo;
         mejorMovimientoAvanzado = mov.san;
@@ -339,15 +335,19 @@ export default function AjedrezJuego() {
         </section>
       )}
 
-      {/* SECCIÓN DE TEXTO PARA SEO - ENFOCADO EN BUENOS AIRES Y CABA */}
+      {/* SECCIÓN DE TEXTO REQUERIDO POR GOOGLE ADSENSE (EVITA PANTALLA VACÍA) */}
       <section className="w-full max-w-[850px] mx-auto my-6 bg-slate-800/50 p-6 rounded-lg border border-slate-700/60 text-sm text-slate-300 leading-relaxed">
         <h2 className="text-lg font-bold text-emerald-400 mb-3">¿Dónde jugar Ajedrez Online en Buenos Aires?</h2>
         <p className="mb-4">
           Bienvenido a <strong>Chess Master AI</strong>, la plataforma preferida por la comunidad de ajedrez en Buenos Aires y CABA para <strong>jugar ajedrez online gratis</strong>. Nuestra inteligencia artificial avanzada está diseñada para adaptarse a tu ritmo en tiempo real, ideal tanto para estudiantes que recién arrancan en Capital Federal como para jugadores experimentados que buscan perfeccionar sus <strong>aperturas, estrategias y tácticas de ajedrez</strong> sin salir de casa. Jugá directo desde tu PC, tablet o celular, <strong>sin descargas pesadas</strong> y de forma 100% gratuita.
         </p>
         <h3 className="font-semibold text-white mb-1">Unite al Club de Ajedrez Virtual de CABA:</h3>
+        <p className="mb-4">
+          Para ganarle a nuestro motor inteligente en el nivel difícil, vas a tener que dominar el centro del tablero y cuidar muy bien tu defensa. Chess Master AI es la herramienta de entrenamiento mental elegida en Buenos Aires para analizar jugadas, divertirse y alcanzar el <strong>jaque mate</strong> definitivo. ¡Mové tus piezas y desafiá a la IA hoy mismo!
+        </p>
+        <h3 className="font-semibold text-white mb-1">Reglas básicas y entrenamiento mental:</h3>
         <p>
-          Para ganarle a nuestro motor inteligente en el nivel difícil, vas a tener que dominar el centro del tablero y cuidar muy bien tu defense. Chess Master AI es la herramienta de entrenamiento mental elegida en Buenos Aires para analizar jugadas, divertirse y alcanzar el <strong>jaque mate</strong> definitivo. ¡Mové tus piezas y desafiá a la IA hoy mismo!
+          El objetivo del ajedrez es dar jaque mate al rey contrario. Cada jugador cuenta con 16 piezas: un rey, una dama, dos torres, dos alfiles, dos caballos y ocho peones. Cada tipo de pieza se mueve de forma particular. En nuestra aplicación web de Buenos Aires, podés elegir entre tres niveles de dificultad para entrenar tu mente diariamente de forma interactiva y sin demoras.
         </p>
       </section>
 
