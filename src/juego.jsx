@@ -194,21 +194,21 @@ export default function AjedrezJuego() {
 
   // --- RENDERS DE PANTALLA ---
 
-  // 1. MENÚ PRINCIPAL (Lo que ve Google AdSense y aprueba de una)
+  // 1. MENÚ PRINCIPAL (Con los dos espacios recuperados y aprobados por Google)
   if (pantalla === 'inicio') {
     return (
       <div className="min-h-screen bg-slate-900 text-white font-sans flex flex-col justify-between p-6">
-        <header className="text-center my-6">
+        <header className="text-center my-4">
           <h1 className="text-4xl font-black text-emerald-400 tracking-wider">CHESS MASTER AI</h1>
           <p className="text-sm text-slate-400 mt-2">El mejor simulador de ajedrez virtual libre y gratuito</p>
         </header>
 
-        {/* PUBLICIDAD CRUCIAL EN EL MENÚ */}
-        <div className="w-full max-w-[728px] mx-auto my-4">
+        {/* PRIMER ANUNCIO: HORIZONTAL ARRIBA */}
+        <div className="w-full max-w-[728px] mx-auto my-2">
           <GoogleAd slot="1960438176" format="horizontal" estiloSimulado="w-full h-[90px]" />
         </div>
 
-        <div className="max-w-[500px] mx-auto text-center my-6 bg-slate-800 p-8 rounded-xl border border-slate-700 shadow-2xl">
+        <div className="max-w-[500px] mx-auto text-center my-4 bg-slate-800 p-8 rounded-xl border border-slate-700 shadow-2xl w-full">
           <h2 className="text-xl font-bold text-white mb-4">¿Estás listo para el desafío?</h2>
           <p className="text-sm text-slate-300 mb-6">Enfrentá a nuestro motor con inteligencia artificial en tres niveles de dificultad diferentes.</p>
           
@@ -220,8 +220,13 @@ export default function AjedrezJuego() {
           </button>
         </div>
 
-        {/* TEXTO SEO INTACTO PARA EL ROBOT */}
-        <section className="w-full max-w-[850px] mx-auto my-6 bg-slate-800/40 p-6 rounded-lg border border-slate-700/50 text-sm text-slate-300 leading-relaxed">
+        {/* SEGUNDO ANUNCIO: CUADRADO EN EL MEDIO (BIEN SEPARADO DEL JUEGO) */}
+        <div className="w-full max-w-[336px] mx-auto my-4">
+          <GoogleAd slot="1326013356" format="rectangle" estiloSimulado="w-full h-[280px]" />
+        </div>
+
+        {/* TEXTO SEO PARA EL ROBOT */}
+        <section className="w-full max-w-[850px] mx-auto my-4 bg-slate-800/40 p-6 rounded-lg border border-slate-700/50 text-sm text-slate-300 leading-relaxed">
           <h2 className="text-lg font-bold text-emerald-400 mb-3">¿Dónde jugar Ajedrez Online en Buenos Aires?</h2>
           <p className="mb-4">
             Bienvenido a <strong>Chess Master AI</strong>, la plataforma preferida por la comunidad de ajedrez en Buenos Aires y CABA para <strong>jugar ajedrez online gratis</strong>. Nuestra inteligencia artificial avanzada está diseñada para adaptarse a tu ritmo en tiempo real, ideal tanto para estudiantes que recién arrancan en Capital Federal como para jugadores experimentados que buscan perfeccionar sus <strong>aperturas, estrategias y tácticas de ajedrez</strong> sin salir de casa. Jugá directo desde tu PC, tablet o celular, <strong>sin descargas pesadas</strong> y de forma 100% gratuita.
@@ -239,7 +244,7 @@ export default function AjedrezJuego() {
     );
   }
 
-  // 2. PANTALLA DEL TABLERO (Limpia de anuncios para evitar quejas de comportamiento)
+  // 2. PANTALLA DEL TABLERO (Limpia para cumplir las normas de Google)
   return (
     <div className="min-h-screen bg-slate-900 text-white font-sans flex flex-col justify-between p-4">
       <header className="flex justify-between items-center max-w-[1000px] w-full mx-auto my-2 border-b border-slate-800 pb-2">
@@ -320,7 +325,7 @@ export default function AjedrezJuego() {
         </div>
       </main>
 
-      {/* GUÍA DE AYUDA DENTRO DEL JUEGO */}
+      {/* GUÍA DE AYUDA */}
       {mostrarAyuda && (
         <section className="w-full max-w-[850px] mx-auto my-4 bg-slate-950 p-6 rounded-lg border border-slate-700 text-xs sm:text-sm text-slate-300 leading-relaxed shadow-xl">
           <h2 className="text-lg font-bold text-emerald-400 mb-2 border-b border-slate-800 pb-1">Guía Rápida: Cómo Jugar al Ajedrez</h2>
