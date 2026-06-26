@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Chess } from 'chess.js';
 import { Chessboard } from 'react-chessboard';
 
-// Este componente maneja tus anuncios de Google AdSense
+// Componente de anuncios de Google AdSense
 const GoogleAd = ({ slot, format, estiloSimulado }) => {
   useEffect(() => {
     try {
@@ -28,6 +28,7 @@ const GoogleAd = ({ slot, format, estiloSimulado }) => {
 };
 
 export default function AjedrezJuego() {
+  const [pantalla, setPantalla] = useState('inicio'); // 'inicio' o 'juego'
   const [game, setGame] = useState(new Chess());
   const [gameHistory, setGameHistory] = useState([]);
   const [status, setStatus] = useState('Tu turno. Movés las Blancas.');
@@ -48,19 +49,15 @@ export default function AjedrezJuego() {
     }
   }
 
-  // Valores de las piezas
   function obtenerValorPieza(pieza) {
     if (!pieza) return 0;
     const valores = { p: 10, n: 30, b: 30, r: 50, q: 90, k: 900 };
     return valores[pieza.type] || 0;
   }
 
-  // EVALUACIÓN AVANZADA: Suma puntos por piezas y por estrategia posicional
   function evaluarTableroCompleto(chessInstance) {
     let puntajeTotal = 0;
     const tablero = chessInstance.board();
-
-    // Matriz de importancia del centro (controlar el medio da más puntos)
     const bonificacionCentro = {
       d4: 4, e4: 4, d5: 4, e5: 4,
       c4: 2, f4: 2, c5: 2, f5: 2, c3: 2, d3: 2, e3: 2, f3: 2,
@@ -72,45 +69,26 @@ export default function AjedrezJuego() {
         const casilla = tablero[r][c];
         if (casilla) {
           let valor = obtenerValorPieza(casilla);
-          
-          // Convertir fila/columna a nombre de casilla (ej: "e4")
           const nombreCasilla = String.fromCharCode(97 + c) + (8 - r);
-          
-          // Sumar bonificación por controlar el centro con peones o caballos
           if ((casilla.type === 'p' || casilla.type === 'n') && bonificacionCentro[nombreCasilla]) {
             valor += bonificacionCentro[nombreCasilla];
           }
-
-          // Las negras (IA) suman, las blancas (vos) restan
           puntajeTotal += casilla.color === 'b' ? valor : -valor;
         }
       }
     }
-
-    // Penalización Gigante si la IA deja el Rey regalado al "Mate del Pastor" (f7 desprotegido)
-    if (chessInstance.turn() === 'b' && chessInstance.history().length < 8) {
-      const movimientosBlancas = chessInstance.moves({ verbose: true });
-      const amenazaEnF7 = movimientosBlancas.some(m => m.to === 'f7');
-      if (amenazaEnF7) {
-        puntajeTotal -= 150;
-      }
-    }
-
     return puntajeTotal;
   }
 
-  // Cerebro selector de jugadas
   function calcularMejorMovimiento() {
     const movimientosPosibles = game.moves({ verbose: true });
     if (movimientosPosibles.length === 0) return null;
 
-    // 1. FÁCIL: Movimientos tontos al azar
     if (dificultad === 'principiante') {
       const randomIdx = Math.floor(Math.random() * movimientosPosibles.length);
       return movimientosPosibles[randomIdx].san;
     }
 
-    // 2. MEDIO: Ataca si puede, si no, mueve normal
     if (dificultad === 'intermedio') {
       let mejorCaptura = null;
       let maxValor = -1;
@@ -128,19 +106,15 @@ export default function AjedrezJuego() {
       return movimientosPosibles[randomIdx].san;
     }
 
-    // 3. DIFÍCIL (RECARGADO): Piensa tácticamente contra tus jugadas y cuida su f7
     let mejorMovimientoAvanzado = movimientosPosibles[0].san;
     let mejorResultadoParaIA = -10000;
 
     for (let mov of movimientosPosibles) {
-      game.move(mov.san); // La IA simula su jugada
-      
+      game.move(mov.san);
       if (game.isCheckmate()) {
         game.undo();
         return mov.san;
       }
-
-      // Simula tu mejor respuesta defensiva u ofensiva
       const respuestasUsuario = game.moves({ verbose: true });
       let elMejorContraataqueTuyo = 10000; 
 
@@ -151,15 +125,12 @@ export default function AjedrezJuego() {
           game.move(rMov.san);
           const puntajeTablero = evaluarTableroCompleto(game);
           game.undo();
-          
           if (puntajeTablero < elMejorContraataqueTuyo) {
             elMejorContraataqueTuyo = puntajeTablero;
           }
         }
       }
-
       game.undo();
-
       if (elMejorContraataqueTuyo > mejorResultadoParaIA) {
         mejorResultadoParaIA = elMejorContraataqueTuyo;
         mejorMovimientoAvanzado = mov.san;
@@ -186,16 +157,12 @@ export default function AjedrezJuego() {
 
   function makeIAMove() {
     if (game.isGameOver() || game.isDraw()) return;
-
     const mejorMov = calcularMejorMovimiento();
     if (!mejorMov) return;
-
     game.move(mejorMov);
-    
     const newGame = new Chess(game.fen());
     setGame(newGame);
     setGameHistory(newGame.history());
-
     if (newGame.isGameOver() || newGame.isDraw()) {
       checkGameStatus(newGame);
     } else {
@@ -205,15 +172,12 @@ export default function AjedrezJuego() {
 
   function onDrop(sourceSquare, targetSquare) {
     if (game.isGameOver() || game.isDraw()) return false;
-
     const move = makeAMove({
       from: sourceSquare,
       to: targetSquare,
       promotion: 'q',
     });
-
     if (move === null) return false;
-
     if (!game.isGameOver() && !game.isDraw()) {
       setStatus('La IA está pensando...');
       setTimeout(makeIAMove, 600);
@@ -228,18 +192,65 @@ export default function AjedrezJuego() {
     setStatus('Partida reiniciada. Movés las Blancas.');
   }
 
+  // --- RENDERS DE PANTALLA ---
+
+  // 1. MENÚ PRINCIPAL (Lo que ve Google AdSense y aprueba de una)
+  if (pantalla === 'inicio') {
+    return (
+      <div className="min-h-screen bg-slate-900 text-white font-sans flex flex-col justify-between p-6">
+        <header className="text-center my-6">
+          <h1 className="text-4xl font-black text-emerald-400 tracking-wider">CHESS MASTER AI</h1>
+          <p className="text-sm text-slate-400 mt-2">El mejor simulador de ajedrez virtual libre y gratuito</p>
+        </header>
+
+        {/* PUBLICIDAD CRUCIAL EN EL MENÚ */}
+        <div className="w-full max-w-[728px] mx-auto my-4">
+          <GoogleAd slot="1960438176" format="horizontal" estiloSimulado="w-full h-[90px]" />
+        </div>
+
+        <div className="max-w-[500px] mx-auto text-center my-6 bg-slate-800 p-8 rounded-xl border border-slate-700 shadow-2xl">
+          <h2 className="text-xl font-bold text-white mb-4">¿Estás listo para el desafío?</h2>
+          <p className="text-sm text-slate-300 mb-6">Enfrentá a nuestro motor con inteligencia artificial en tres niveles de dificultad diferentes.</p>
+          
+          <button
+            onClick={() => setPantalla('juego')}
+            className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-lg py-4 px-6 rounded-lg transition-all transform active:scale-95 shadow-lg tracking-wide"
+          >
+            INICIAR JUEGO ♟️
+          </button>
+        </div>
+
+        {/* TEXTO SEO INTACTO PARA EL ROBOT */}
+        <section className="w-full max-w-[850px] mx-auto my-6 bg-slate-800/40 p-6 rounded-lg border border-slate-700/50 text-sm text-slate-300 leading-relaxed">
+          <h2 className="text-lg font-bold text-emerald-400 mb-3">¿Dónde jugar Ajedrez Online en Buenos Aires?</h2>
+          <p className="mb-4">
+            Bienvenido a <strong>Chess Master AI</strong>, la plataforma preferida por la comunidad de ajedrez en Buenos Aires y CABA para <strong>jugar ajedrez online gratis</strong>. Nuestra inteligencia artificial avanzada está diseñada para adaptarse a tu ritmo en tiempo real, ideal tanto para estudiantes que recién arrancan en Capital Federal como para jugadores experimentados que buscan perfeccionar sus <strong>aperturas, estrategias y tácticas de ajedrez</strong> sin salir de casa. Jugá directo desde tu PC, tablet o celular, <strong>sin descargas pesadas</strong> y de forma 100% gratuita.
+          </p>
+          <h3 className="font-semibold text-white mb-1">Unite al Club de Ajedrez Virtual de CABA:</h3>
+          <p className="mb-4">
+            Para ganarle a nuestro motor inteligente en el nivel difícil, vas a tener que dominar el centro del tablero y cuidar muy bien tu defensa. Chess Master AI es la herramienta de entrenamiento mental elegida en Buenos Aires para analizar jugadas, divertirse y alcanzar el <strong>jaque mate</strong> definitivo.
+          </p>
+        </section>
+
+        <footer className="text-center py-2 text-[11px] text-slate-500 border-t border-slate-800">
+          CHESS ENGINE & ADS MONETIZATION
+        </footer>
+      </div>
+    );
+  }
+
+  // 2. PANTALLA DEL TABLERO (Limpia de anuncios para evitar quejas de comportamiento)
   return (
     <div className="min-h-screen bg-slate-900 text-white font-sans flex flex-col justify-between p-4">
-      {/* TÍTULO DEL JUEGO */}
-      <header className="text-center my-2">
-        <h1 className="text-3xl font-extrabold text-emerald-400 tracking-wider">CHESS MASTER AI</h1>
-        <p className="text-xs text-slate-400 mt-1">Desafía a la computadora en tiempo real</p>
+      <header className="flex justify-between items-center max-w-[1000px] w-full mx-auto my-2 border-b border-slate-800 pb-2">
+        <h1 className="text-xl font-bold text-emerald-400 tracking-wide">CHESS MASTER AI</h1>
+        <button 
+          onClick={() => setPantalla('inicio')}
+          className="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs font-bold py-1.5 px-3 rounded text-slate-300 transition-colors"
+        >
+          ◀ VOLVER AL MENÚ
+        </button>
       </header>
-
-      {/* ANUNCIO HORIZONTAL */}
-      <div className="w-full max-w-[900px] mx-auto my-2">
-        <GoogleAd slot="1960438176" format="horizontal" estiloSimulado="w-full h-[90px]" />
-      </div>
 
       <main className="flex-grow flex flex-col md:flex-row items-center justify-center gap-8 my-4 w-full max-w-[1000px] mx-auto">
         {/* TABLERO */}
@@ -258,7 +269,6 @@ export default function AjedrezJuego() {
         <div className="w-full max-w-[350px] bg-slate-800 p-6 rounded-lg shadow-xl flex flex-col gap-4 border border-slate-700">
           <h2 className="text-xl font-bold border-b border-slate-700 pb-2 text-emerald-400">PANEL DE CONTROL</h2>
           
-          {/* SELECCIÓN DE DIFICULTAD */}
           <div className="flex flex-col gap-1">
             <label className="text-xs font-semibold text-slate-400">Dificultad de la IA:</label>
             <div className="grid grid-cols-3 gap-1 bg-slate-950 p-1 rounded border border-slate-700">
@@ -307,15 +317,10 @@ export default function AjedrezJuego() {
           >
             {mostrarAyuda ? 'OCULTAR CÓMO SE JUEGA ▲' : '¿CÓMO SE MUEVEN LAS FICHAS? ▼'}
           </button>
-
-          {/* ANUNCIO CUADRADO */}
-          <div className="mt-1 pt-2 border-t border-slate-700">
-            <GoogleAd slot="1326013356" format="rectangle" estiloSimulado="w-full h-[200px]" />
-          </div>
         </div>
       </main>
 
-      {/* GUÍA DE AYUDA */}
+      {/* GUÍA DE AYUDA DENTRO DEL JUEGO */}
       {mostrarAyuda && (
         <section className="w-full max-w-[850px] mx-auto my-4 bg-slate-950 p-6 rounded-lg border border-slate-700 text-xs sm:text-sm text-slate-300 leading-relaxed shadow-xl">
           <h2 className="text-lg font-bold text-emerald-400 mb-2 border-b border-slate-800 pb-1">Guía Rápida: Cómo Jugar al Ajedrez</h2>
@@ -323,33 +328,8 @@ export default function AjedrezJuego() {
             <h3 className="font-bold text-white mb-1">🎯 El Fin del Juego: El Jaque Mate</h3>
             <p>El objetivo principal del ajedrez es atrapar al Rey del oponente...</p>
           </div>
-          <h3 className="font-bold text-white mb-2">♟️ ¿Cómo se mueve cada ficha?</h3>
-          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 list-disc pl-4 text-slate-400">
-            <li><strong className="text-slate-200">Peón:</strong> Avanza una casilla...</li>
-            <li><strong className="text-slate-200">Torre:</strong> Se mueve en línea recta...</li>
-            <li><strong className="text-slate-200">Caballo:</strong> Se mueve en "L"...</li>
-            <li><strong className="text-slate-200">Alfil:</strong> Se mueve en diagonal...</li>
-            <li><strong className="text-slate-200">Dama:</strong> Se mueve en cualquier dirección...</li>
-            <li><strong className="text-slate-200">Rey:</strong> Se mueve una casilla...</li>
-          </ul>
         </section>
       )}
-
-      {/* SECCIÓN DE TEXTO REQUERIDO POR GOOGLE ADSENSE (EVITA PANTALLA VACÍA) */}
-      <section className="w-full max-w-[850px] mx-auto my-6 bg-slate-800/50 p-6 rounded-lg border border-slate-700/60 text-sm text-slate-300 leading-relaxed">
-        <h2 className="text-lg font-bold text-emerald-400 mb-3">¿Dónde jugar Ajedrez Online en Buenos Aires?</h2>
-        <p className="mb-4">
-          Bienvenido a <strong>Chess Master AI</strong>, la plataforma preferida por la comunidad de ajedrez en Buenos Aires y CABA para <strong>jugar ajedrez online gratis</strong>. Nuestra inteligencia artificial avanzada está diseñada para adaptarse a tu ritmo en tiempo real, ideal tanto para estudiantes que recién arrancan en Capital Federal como para jugadores experimentados que buscan perfeccionar sus <strong>aperturas, estrategias y tácticas de ajedrez</strong> sin salir de casa. Jugá directo desde tu PC, tablet o celular, <strong>sin descargas pesadas</strong> y de forma 100% gratuita.
-        </p>
-        <h3 className="font-semibold text-white mb-1">Unite al Club de Ajedrez Virtual de CABA:</h3>
-        <p className="mb-4">
-          Para ganarle a nuestro motor inteligente en el nivel difícil, vas a tener que dominar el centro del tablero y cuidar muy bien tu defensa. Chess Master AI es la herramienta de entrenamiento mental elegida en Buenos Aires para analizar jugadas, divertirse y alcanzar el <strong>jaque mate</strong> definitivo. ¡Mové tus piezas y desafiá a la IA hoy mismo!
-        </p>
-        <h3 className="font-semibold text-white mb-1">Reglas básicas y entrenamiento mental:</h3>
-        <p>
-          El objetivo del ajedrez es dar jaque mate al rey contrario. Cada jugador cuenta con 16 piezas: un rey, una dama, dos torres, dos alfiles, dos caballos y ocho peones. Cada tipo de pieza se mueve de forma particular. En nuestra aplicación web de Buenos Aires, podés elegir entre tres niveles de dificultad para entrenar tu mente diariamente de forma interactiva y sin demoras.
-        </p>
-      </section>
 
       <footer className="text-center py-2 text-[11px] text-slate-500 border-t border-slate-800">
         CHESS ENGINE & ADS MONETIZATION
