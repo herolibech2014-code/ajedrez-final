@@ -194,7 +194,7 @@ export default function AjedrezJuego() {
 
   // --- RENDERS DE PANTALLA ---
 
-  // 1. MENÚ PRINCIPAL (Con los dos espacios recuperados y aprobados por Google)
+  // 1. MENÚ PRINCIPAL (Con dos espacios de publicidad y optimización SEO masiva)
   if (pantalla === 'inicio') {
     return (
       <div className="min-h-screen bg-slate-900 text-white font-sans flex flex-col justify-between p-6">
@@ -203,7 +203,7 @@ export default function AjedrezJuego() {
           <p className="text-sm text-slate-400 mt-2">El mejor simulador de ajedrez virtual libre y gratuito</p>
         </header>
 
-        {/* PRIMER ANUNCIO: HORIZONTAL ARRIBA */}
+        {/* ANUNCIO 1: HORIZONTAL ARRIBA */}
         <div className="w-full max-w-[728px] mx-auto my-2">
           <GoogleAd slot="1960438176" format="horizontal" estiloSimulado="w-full h-[90px]" />
         </div>
@@ -220,20 +220,26 @@ export default function AjedrezJuego() {
           </button>
         </div>
 
-        {/* SEGUNDO ANUNCIO: CUADRADO EN EL MEDIO (BIEN SEPARADO DEL JUEGO) */}
+        {/* ANUNCIO 2: CUADRADO EN EL MEDIO */}
         <div className="w-full max-w-[336px] mx-auto my-4">
           <GoogleAd slot="1326013356" format="rectangle" estiloSimulado="w-full h-[280px]" />
         </div>
 
-        {/* TEXTO SEO PARA EL ROBOT */}
+        {/* SECCIÓN DE CONTENIDO SEO PROFUNDO PARA EL ROBOT DE GOOGLE */}
         <section className="w-full max-w-[850px] mx-auto my-4 bg-slate-800/40 p-6 rounded-lg border border-slate-700/50 text-sm text-slate-300 leading-relaxed">
-          <h2 className="text-lg font-bold text-emerald-400 mb-3">¿Dónde jugar Ajedrez Online en Buenos Aires?</h2>
+          <h2 className="text-xl font-bold text-emerald-400 mb-3">¿Por qué elegir Chess Master AI para jugar ajedrez online gratis?</h2>
           <p className="mb-4">
-            Bienvenido a <strong>Chess Master AI</strong>, la plataforma preferida por la comunidad de ajedrez en Buenos Aires y CABA para <strong>jugar ajedrez online gratis</strong>. Nuestra inteligencia artificial avanzada está diseñada para adaptarse a tu ritmo en tiempo real, ideal tanto para estudiantes que recién arrancan en Capital Federal como para jugadores experimentados que buscan perfeccionar sus <strong>aperturas, estrategias y tácticas de ajedrez</strong> sin salir de casa. Jugá directo desde tu PC, tablet o celular, <strong>sin descargas pesadas</strong> y de forma 100% gratuita.
+            Bienvenido a <strong>Chess Master AI</strong>, el sitio web diseñado para la comunidad de ajedrez en Buenos Aires, CABA y toda Argentina. Si estás buscando <strong>jugar ajedrez online gratis y sin registrarse</strong>, nuestra plataforma te ofrece una experiencia directa, rápida y optimizada para cualquier navegador web o teléfono celular.
           </p>
-          <h3 className="font-semibold text-white mb-1">Unite al Club de Ajedrez Virtual de CABA:</h3>
+          
+          <h3 className="text-base font-semibold text-white mb-2">Ajedrez contra la computadora con El Mejor Motor Inteligente</h3>
           <p className="mb-4">
-            Para ganarle a nuestro motor inteligente en el nivel difícil, vas a tener que dominar el centro del tablero y cuidar muy bien tu defensa. Chess Master AI es la herramienta de entrenamiento mental elegida en Buenos Aires para analizar jugadas, divertirse y alcanzar el <strong>jaque mate</strong> definitivo.
+            Nuestra aplicación cuenta con un motor inteligente calibrado en tres niveles: ideal para principiantes que buscan aprender las <strong>reglas del ajedrez</strong>, un nivel intermedio para socios de clubes de ajedrez en Capital Federal, y un modo difícil pensado para los estrategas más exigentes que desean perfeccionar sus <strong>aperturas, tácticas y defensas</strong> virtuales.
+          </p>
+
+          <h3 className="text-base font-semibold text-white mb-2">Entrenamiento Mental y Partidas de Ajedrez Virtual en CABA</h3>
+          <p>
+            No necesitás descargas pesadas ni programas complejos. Con Chess Master AI podés entrenar tu mente diariamente, repasar el movimiento de las piezas (peón, torre, caballo, alfil, dama y rey) y buscar el <strong>jaque mate</strong> perfecto de forma 100% interactiva. ¡Sumate al club de ajedrez virtual y empezá a mover tus piezas hoy mismo!
           </p>
         </section>
 
@@ -244,7 +250,7 @@ export default function AjedrezJuego() {
     );
   }
 
-  // 2. PANTALLA DEL TABLERO (Limpia para cumplir las normas de Google)
+  // 2. PANTALLA DEL TABLERO (Limpia para cumplir al 100% las normativas)
   return (
     <div className="min-h-screen bg-slate-900 text-white font-sans flex flex-col justify-between p-4">
       <header className="flex justify-between items-center max-w-[1000px] w-full mx-auto my-2 border-b border-slate-800 pb-2">
