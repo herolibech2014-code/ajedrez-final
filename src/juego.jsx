@@ -28,7 +28,7 @@ const GoogleAd = ({ slot, format, estiloSimulado }) => {
 };
 
 export default function AjedrezJuego() {
-  const [pantalla, setPantalla] = useState('inicio'); // 'inicio' o 'juego'
+  const [pantalla, setPantalla] = useState('inicio'); // 'inicio', 'reglas', 'estrategias', 'contacto', o 'juego'
   const [game, setGame] = useState(new Chess());
   const [gameHistory, setGameHistory] = useState([]);
   const [status, setStatus] = useState('Tu turno. Movés las Blancas.');
@@ -192,65 +192,167 @@ export default function AjedrezJuego() {
     setStatus('Partida reiniciada. Movés las Blancas.');
   }
 
-  // --- RENDERS DE PANTALLA ---
+  // --- COMPONENTE DE NAVEGACIÓN COMÚN ---
+  const MenuNavegacion = () => (
+    <nav className="bg-slate-800 p-3 rounded-lg border border-slate-700 flex flex-wrap justify-center gap-4 my-4 max-w-[850px] mx-auto w-full">
+      <button 
+        onClick={() => setPantalla('inicio')} 
+        className={`px-4 py-2 rounded font-bold text-xs sm:text-sm transition-colors ${pantalla === 'inicio' ? 'bg-emerald-500 text-slate-950' : 'text-slate-300 hover:text-white'}`}
+      >
+        INICIO
+      </button>
+      <button 
+        onClick={() => setPantalla('reglas')} 
+        className={`px-4 py-2 rounded font-bold text-xs sm:text-sm transition-colors ${pantalla === 'reglas' ? 'bg-emerald-500 text-slate-950' : 'text-slate-300 hover:text-white'}`}
+      >
+        ¿CÓMO JUGAR?
+      </button>
+      <button 
+        onClick={() => setPantalla('estrategias')} 
+        className={`px-4 py-2 rounded font-bold text-xs sm:text-sm transition-colors ${pantalla === 'estrategias' ? 'bg-emerald-500 text-slate-950' : 'text-slate-300 hover:text-white'}`}
+      >
+        ESTRATEGIAS
+      </button>
+      <button 
+        onClick={() => setPantalla('contacto')} 
+        className={`px-4 py-2 rounded font-bold text-xs sm:text-sm transition-colors ${pantalla === 'contacto' ? 'bg-emerald-500 text-slate-950' : 'text-slate-300 hover:text-white'}`}
+      >
+        CONTACTO
+      </button>
+    </nav>
+  );
 
-  // 1. MENÚ PRINCIPAL (Con dos espacios de publicidad y optimización SEO masiva)
-  if (pantalla === 'inicio') {
+  // --- RENDERS DE PANTALLAS ---
+
+  // PANTALLAS DEL PORTAL (Inicio, Reglas, Estrategias, Contacto)
+  if (pantalla !== 'juego') {
     return (
-      <div className="min-h-screen bg-slate-900 text-white font-sans flex flex-col justify-between p-6">
+      <div className="min-h-screen bg-slate-900 text-white font-sans flex flex-col justify-between p-4 sm:p-6">
         <header className="text-center my-4">
           <h1 className="text-4xl font-black text-emerald-400 tracking-wider">CHESS MASTER AI</h1>
-          <p className="text-sm text-slate-400 mt-2">El mejor simulador de ajedrez virtual libre y gratuito</p>
+          <p className="text-sm text-slate-400 mt-2">Tu portal de ajedrez virtual libre, gratuito y en español</p>
         </header>
+
+        {/* MENÚ DE NAVEGACIÓN PARA GOOGLE Y EL USUARIO */}
+        <MenuNavegacion />
 
         {/* ANUNCIO 1: HORIZONTAL ARRIBA */}
         <div className="w-full max-w-[728px] mx-auto my-2">
           <GoogleAd slot="1960438176" format="horizontal" estiloSimulado="w-full h-[90px]" />
         </div>
 
-        <div className="max-w-[500px] mx-auto text-center my-4 bg-slate-800 p-8 rounded-xl border border-slate-700 shadow-2xl w-full">
-          <h2 className="text-xl font-bold text-white mb-4">¿Estás listo para el desafío?</h2>
-          <p className="text-sm text-slate-300 mb-6">Enfrentá a nuestro motor con inteligencia artificial en tres niveles de dificultad diferentes.</p>
+        {/* SECCIÓN DINÁMICA SEGÚN LA PÁGINA SELECCIONADA */}
+        <main className="flex-grow w-full max-w-[850px] mx-auto my-4">
           
-          <button
-            onClick={() => setPantalla('juego')}
-            className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-lg py-4 px-6 rounded-lg transition-all transform active:scale-95 shadow-lg tracking-wide"
-          >
-            INICIAR JUEGO ♟️
-          </button>
-        </div>
+          {pantalla === 'inicio' && (
+            <div className="flex flex-col gap-6">
+              <div className="text-center my-4 bg-slate-800 p-8 rounded-xl border border-slate-700 shadow-2xl w-full">
+                <h2 className="text-2xl font-bold text-white mb-4">¿Estás listo para el desafío de ajedrez?</h2>
+                <p className="text-sm text-slate-300 mb-6">Enfrentá a nuestra inteligencia artificial adaptativa sin demoras y sin registros molestos.</p>
+                <button
+                  onClick={() => setPantalla('juego')}
+                  className="w-full max-w-[320px] mx-auto bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-lg py-4 px-6 rounded-lg transition-all transform active:scale-95 shadow-lg tracking-wide block"
+                >
+                  INICIAR JUEGO ♟️
+                </button>
+              </div>
+
+              <article className="bg-slate-800/40 p-6 rounded-lg border border-slate-700/50 text-sm leading-relaxed text-slate-300">
+                <h2 className="text-xl font-bold text-emerald-400 mb-3">El Portal de Ajedrez Definitivo en Buenos Aires</h2>
+                <p className="mb-4">
+                  En <strong>Chess Master AI</strong> nos apasiona difundir el juego ciencia. Nuestra plataforma web está diseñada para todos los vecinos y vecinas de Buenos Aires, CABA y el resto de Argentina que desean disfrutar de una partida de ajedrez sin la necesidad de instalar aplicaciones pesadas ni crear cuentas de usuario.
+                </p>
+                <p>
+                  Ofrecemos un motor de inteligencia artificial desarrollado con tecnología moderna para que puedas entrenar tu mente en cualquier momento del día, ya sea desde tu computadora de escritorio o desde tu teléfono celular mientras viajás en colectivo.
+                </p>
+              </article>
+            </div>
+          )}
+
+          {pantalla === 'reglas' && (
+            <article className="bg-slate-800/60 p-6 sm:p-8 rounded-xl border border-slate-700 shadow-xl text-sm leading-relaxed text-slate-300">
+              <h2 className="text-2xl font-bold text-emerald-400 mb-4">Reglas de Ajedrez: Aprende a Jugar desde Cero</h2>
+              <p className="mb-4">
+                El ajedrez es un juego milenario de estrategia pura donde no interviene el azar. Se juega sobre un tablero de 64 casillas de colores alternos con un total de 32 piezas (16 blancas y 16 negras).
+              </p>
+              
+              <h3 className="text-lg font-semibold text-white mt-4 mb-2">El Movimiento de las Piezas</h3>
+              <ul className="list-disc pl-5 space-y-2 mb-4">
+                <li><strong>El Rey:</strong> Se desplaza una sola casilla en cualquier dirección. Es la pieza más importante; si lo atrapan, perdés el juego.</li>
+                <li><strong>La Dama o Reina:</strong> Es la pieza más poderosa. Puede moverse cualquier cantidad de casillas en dirección vertical, horizontal o diagonal.</li>
+                <li><strong>La Torre:</strong> Se mueve en línea recta (horizontal o vertical) tantas casillas como estén libres.</li>
+                <li><strong>El Alfil:</strong> Se desplaza únicamente en diagonal, respetando siempre el color de su casilla inicial.</li>
+                <li><strong>El Caballo:</strong> Se mueve en forma de "L" (dos casillas en una dirección y una en perpendicular). Es la única pieza que puede saltar sobre otras.</li>
+                <li><strong>El Peón:</strong> Avanza una casilla hacia adelante (dos en su primer movimiento). Captura en diagonal y si llega al final del tablero, puede transformarse en cualquier otra pieza.</li>
+              </ul>
+            </article>
+          )}
+
+          {pantalla === 'estrategias' && (
+            <article className="bg-slate-800/60 p-6 sm:p-8 rounded-xl border border-slate-700 shadow-xl text-sm leading-relaxed text-slate-300">
+              <h2 className="text-2xl font-bold text-emerald-400 mb-4">Consejos y Estrategias para Vencer a la IA</h2>
+              <p className="mb-4">
+                Enfrentar a una computadora requiere paciencia y táctica. Aquí te dejamos tres principios fundamentales que utilizan los grandes maestros de la Federación Argentina de Ajedrez para dominar las partidas:
+              </p>
+              
+              <h3 className="text-lg font-semibold text-white mt-4 mb-2">1. Domina el Centro del Tablero</h3>
+              <p className="mb-4">
+                Las casillas centrales (d4, e4, d5, e5) son las más importantes del juego. Controlar el centro con tus peones y piezas menores (caballos y alfiles) te da mayor espacio de maniobra y limita las opciones de ataque de la inteligencia artificial.
+              </p>
+
+              <h3 className="text-lg font-semibold text-white mt-4 mb-2">2. Desarrolla tus Piezas Temprano</h3>
+              <p className="mb-4">
+                No intentes atacar solo con la Reina al principio del juego. Saca tus caballos y alfiles rápidamente para ubicarlos en posiciones activas. Una ofensiva sin el apoyo de tus otras piezas está destinada al fracaso.
+              </p>
+
+              <h3 className="text-lg font-semibold text-white mt-4 mb-2">3. Protege a tu Rey (Enroque)</h3>
+              <p>
+                La seguridad del rey es la máxima prioridad. Trata de realizar el enroque dentro de las primeras diez jugadas para refugiar a tu monarca en una esquina segura detrás de una sólida fila de peones protectores.
+              </p>
+            </article>
+          )}
+
+          {pantalla === 'contacto' && (
+            <article className="bg-slate-800/60 p-6 sm:p-8 rounded-xl border border-slate-700 shadow-xl text-sm leading-relaxed text-slate-300 max-w-[550px] mx-auto">
+              <h2 className="text-2xl font-bold text-emerald-400 mb-4 text-center">Contacto</h2>
+              <p className="mb-6 text-center text-slate-400">
+                ¿Tenés alguna sugerencia para mejorar nuestro motor de ajedrez? Escribinos y compartinos tus comentarios.
+              </p>
+              <form onSubmit={(e) => { e.preventDefault(); alert('¡Mensaje enviado con éxito! Gracias por escribirnos.'); }} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-400 mb-1">Nombre:</label>
+                  <input type="text" required className="w-full bg-slate-950 border border-slate-700 rounded p-2.5 text-white focus:outline-none focus:border-emerald-500" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-400 mb-1">Correo Electrónico:</label>
+                  <input type="email" required className="w-full bg-slate-950 border border-slate-700 rounded p-2.5 text-white focus:outline-none focus:border-emerald-500" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-400 mb-1">Mensaje:</label>
+                  <textarea required rows="4" className="w-full bg-slate-950 border border-slate-700 rounded p-2.5 text-white focus:outline-none focus:border-emerald-500"></textarea>
+                </div>
+                <button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 px-4 rounded transition-colors text-sm">
+                  Enviar Comentario
+                </button>
+              </form>
+            </article>
+          )}
+
+        </main>
 
         {/* ANUNCIO 2: CUADRADO EN EL MEDIO */}
         <div className="w-full max-w-[336px] mx-auto my-4">
           <GoogleAd slot="1326013356" format="rectangle" estiloSimulado="w-full h-[280px]" />
         </div>
 
-        {/* SECCIÓN DE CONTENIDO SEO PROFUNDO PARA EL ROBOT DE GOOGLE */}
-        <section className="w-full max-w-[850px] mx-auto my-4 bg-slate-800/40 p-6 rounded-lg border border-slate-700/50 text-sm text-slate-300 leading-relaxed">
-          <h2 className="text-xl font-bold text-emerald-400 mb-3">¿Por qué elegir Chess Master AI para jugar ajedrez online gratis?</h2>
-          <p className="mb-4">
-            Bienvenido a <strong>Chess Master AI</strong>, el sitio web diseñado para la comunidad de ajedrez en Buenos Aires, CABA y toda Argentina. Si estás buscando <strong>jugar ajedrez online gratis y sin registrarse</strong>, nuestra plataforma te ofrece una experiencia directa, rápida y optimizada para cualquier navegador web o teléfono celular.
-          </p>
-          
-          <h3 className="text-base font-semibold text-white mb-2">Ajedrez contra la computadora con El Mejor Motor Inteligente</h3>
-          <p className="mb-4">
-            Nuestra aplicación cuenta con un motor inteligente calibrado en tres niveles: ideal para principiantes que buscan aprender las <strong>reglas del ajedrez</strong>, un nivel intermedio para socios de clubes de ajedrez en Capital Federal, y un modo difícil pensado para los estrategas más exigentes que desean perfeccionar sus <strong>aperturas, tácticas y defensas</strong> virtuales.
-          </p>
-
-          <h3 className="text-base font-semibold text-white mb-2">Entrenamiento Mental y Partidas de Ajedrez Virtual en CABA</h3>
-          <p>
-            No necesitás descargas pesadas ni programas complejos. Con Chess Master AI podés entrenar tu mente diariamente, repasar el movimiento de las piezas (peón, torre, caballo, alfil, dama y rey) y buscar el <strong>jaque mate</strong> perfecto de forma 100% interactiva. ¡Sumate al club de ajedrez virtual y empezá a mover tus piezas hoy mismo!
-          </p>
-        </section>
-
-        <footer className="text-center py-2 text-[11px] text-slate-500 border-t border-slate-800">
-          CHESS ENGINE & ADS MONETIZATION
+        <footer className="text-center py-4 text-[11px] text-slate-500 border-t border-slate-800">
+          CHESS ENGINE & ADS MONETIZATION - © 2026 Chess Master AI
         </footer>
       </div>
     );
   }
 
-  // 2. PANTALLA DEL TABLERO (Limpia para cumplir al 100% las normativas)
+  // --- PANTALLA DEL TABLERO DE JUEGO (Se activa al darle "Iniciar Juego") ---
   return (
     <div className="min-h-screen bg-slate-900 text-white font-sans flex flex-col justify-between p-4">
       <header className="flex justify-between items-center max-w-[1000px] w-full mx-auto my-2 border-b border-slate-800 pb-2">
@@ -326,24 +428,24 @@ export default function AjedrezJuego() {
             onClick={() => setMostrarAyuda(!mostrarAyuda)}
             className="w-full border border-slate-600 hover:border-slate-500 bg-slate-900 text-slate-300 hover:text-white font-semibold py-2 px-4 rounded text-xs transition-colors"
           >
-            {mostrarAyuda ? 'OCULTAR CÓMO SE JUEGA ▲' : '¿CÓMO SE MUEVEN LAS FICHAS? ▼'}
+            {mostrarAyuda ? 'OCULTAR GUÍA ▲' : '¿CÓMO SE JUEGA? ▼'}
           </button>
         </div>
       </main>
 
-      {/* GUÍA DE AYUDA */}
+      {/* GUÍA DE AYUDA RÁPIDA DENTRO DEL JUEGO */}
       {mostrarAyuda && (
         <section className="w-full max-w-[850px] mx-auto my-4 bg-slate-950 p-6 rounded-lg border border-slate-700 text-xs sm:text-sm text-slate-300 leading-relaxed shadow-xl">
-          <h2 className="text-lg font-bold text-emerald-400 mb-2 border-b border-slate-800 pb-1">Guía Rápida: Cómo Jugar al Ajedrez</h2>
+          <h2 className="text-lg font-bold text-emerald-400 mb-2 border-b border-slate-800 pb-1">Guía Rápida: Cómo Jugar</h2>
           <div className="mb-4">
             <h3 className="font-bold text-white mb-1">🎯 El Fin del Juego: El Jaque Mate</h3>
-            <p>El objetivo principal del ajedrez es atrapar al Rey del oponente...</p>
+            <p>El objetivo es acorralar al Rey contrario para que no tenga ningún escape posible.</p>
           </div>
         </section>
       )}
 
       <footer className="text-center py-2 text-[11px] text-slate-500 border-t border-slate-800">
-        CHESS ENGINE & ADS MONETIZATION
+        CHESS ENGINE & ADS MONETIZATION - © 2026 Chess Master AI
       </footer>
     </div>
   );
